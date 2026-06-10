@@ -4,12 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>¿Quién paga?</title>
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="¿Quién paga?" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html, body {
       height: 100%;
       background: #000;
@@ -17,7 +16,6 @@
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior: none;
     }
-
     #root {
       min-height: 100dvh;
       background: #0a0a0a;
@@ -27,143 +25,67 @@
       justify-content: space-between;
       padding: 3.5rem 1.5rem 3rem;
     }
-
-    #top {
-      text-align: center;
-    }
-
+    #top { text-align: center; }
     #status-label {
       font-size: 12px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: #444;
     }
-
-    #next-label {
-      font-size: 16px;
-      color: #888;
-      margin-top: 8px;
-    }
-
-    #next-name {
-      font-weight: 600;
-      color: #bbb;
-    }
-
-    #btn-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.25rem;
-    }
-
+    #next-label { font-size: 16px; color: #888; margin-top: 8px; }
+    #next-name { font-weight: 600; color: #bbb; }
+    #btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
     #pay-btn {
-      width: 230px;
-      height: 230px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      font-size: 30px;
-      font-weight: 600;
-      font-family: inherit;
-      color: #fff;
+      width: 230px; height: 230px;
+      border-radius: 50%; border: none; cursor: pointer;
+      font-size: 30px; font-weight: 600;
+      font-family: inherit; color: #fff;
       transition: transform 0.12s ease, box-shadow 0.2s ease;
-      position: relative;
       user-select: none;
     }
-
-    #pay-btn:active {
-      transform: scale(0.92);
-    }
-
-    #pay-btn.ivan {
-      background: #c0392b;
-      box-shadow: 0 0 70px rgba(192,57,43,0.4);
-    }
-
-    #pay-btn.arturo {
-      background: #1a5fa8;
-      box-shadow: 0 0 70px rgba(26,95,168,0.4);
-    }
-
-    #btn-hint {
-      font-size: 12px;
-      color: #333;
-      letter-spacing: 0.04em;
-    }
-
-    #bottom {
-      width: 100%;
-    }
-
+    #pay-btn:active { transform: scale(0.92); }
+    #pay-btn.ivan   { background: #c0392b; box-shadow: 0 0 70px rgba(192,57,43,0.4); }
+    #pay-btn.arturo { background: #1a5fa8; box-shadow: 0 0 70px rgba(26,95,168,0.4); }
+    #btn-hint { font-size: 12px; color: #333; letter-spacing: 0.04em; }
+    #bottom { width: 100%; }
     #history-box {
-      width: 100%;
-      background: #111;
-      border: 0.5px solid #222;
-      border-radius: 14px;
-      padding: 1rem 1.25rem;
+      background: #111; border: 0.5px solid #222;
+      border-radius: 14px; padding: 1rem 1.25rem;
     }
-
     #history-title {
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #333;
-      margin-bottom: 10px;
+      font-size: 10px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #333; margin-bottom: 10px;
     }
-
     .history-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 7px 0;
-      border-bottom: 0.5px solid #1a1a1a;
-      font-size: 13px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0; border-bottom: 0.5px solid #1a1a1a; font-size: 13px;
     }
-
     .history-row:last-child { border-bottom: none; }
-
     .h-name { font-weight: 500; }
-    .h-name.ivan  { color: #e05c4e; }
+    .h-name.ivan   { color: #e05c4e; }
     .h-name.arturo { color: #4a90d9; }
-
     .h-date { color: #3a3a3a; font-size: 12px; }
-
-    #empty-msg {
-      color: #2a2a2a;
-      font-size: 13px;
-      text-align: center;
-      padding: 4px 0;
-    }
-
+    #empty-msg { color: #2a2a2a; font-size: 13px; text-align: center; padding: 4px 0; }
     #sync-indicator {
-      font-size: 11px;
-      color: transparent;
-      text-align: center;
-      margin-top: 8px;
-      height: 14px;
-      transition: color 0.3s;
+      font-size: 11px; color: transparent; text-align: center;
+      margin-top: 8px; height: 14px; transition: color 0.3s;
     }
-
     #sync-indicator.visible { color: #333; }
     #sync-indicator.error   { color: #5a1a1a; }
   </style>
 </head>
 <body>
 <div id="root">
-
   <div id="top">
     <div id="status-label">próximo en pagar</div>
     <div id="next-label">le toca a <span id="next-name">—</span></div>
   </div>
-
   <div id="btn-wrap">
     <button id="pay-btn" class="ivan" onclick="handlePay()">
       <span id="btn-name">Iván</span>
     </button>
     <div id="btn-hint">toca si pagaste hoy</div>
   </div>
-
   <div id="bottom">
     <div id="history-box">
       <div id="history-title">historial reciente</div>
@@ -171,13 +93,15 @@
     </div>
     <div id="sync-indicator"></div>
   </div>
-
 </div>
 
 <script>
-  const STORAGE_URL = 'https://kvdb.io/5kYW7HXJfHAFUKpBdTR7Ld/uber_turno_v1';
+  const BIN_ID  = '6a28bd6cda38895dfea3daf7';
+  const API_KEY = '$2a$10$iC95yUAK7i7M8cXjOuPLuOG8e5d4yPX2avCgzjmHUk9KbqhKI/XOK';
+  const BASE    = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+  const HEADERS = { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY };
   const POLL_MS = 5000;
-  const NAMES = { ivan: 'Iván', arturo: 'Arturo' };
+  const NAMES   = { ivan: 'Iván', arturo: 'Arturo' };
 
   const btn      = document.getElementById('pay-btn');
   const btnName  = document.getElementById('btn-name');
@@ -186,68 +110,47 @@
   const syncEl   = document.getElementById('sync-indicator');
 
   let lastData = null;
-  let pollTimer = null;
 
   function fmt(iso) {
-    const d    = new Date(iso);
-    const now  = new Date();
-    const diff = now - d;
-    const mins = Math.floor(diff / 60000);
-    const hrs  = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
+    const d = new Date(iso), now = new Date(), diff = now - d;
+    const mins = Math.floor(diff/60000), hrs = Math.floor(diff/3600000), days = Math.floor(diff/86400000);
     if (mins < 2)  return 'ahora mismo';
     if (mins < 60) return `hace ${mins} min`;
     if (hrs  < 24) return `hace ${hrs}h`;
     if (days === 1) return 'ayer';
-    const dd = String(d.getDate()).padStart(2,'0');
-    const mm = String(d.getMonth()+1).padStart(2,'0');
-    return `${dd}/${mm}`;
+    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
   }
 
   function renderState(data) {
     const current = data.current || 'ivan';
     btn.className = current;
     btnName.textContent = NAMES[current];
-    const next = current === 'ivan' ? 'arturo' : 'ivan';
-    nextName.textContent = NAMES[next];
-
+    nextName.textContent = NAMES[current === 'ivan' ? 'arturo' : 'ivan'];
     const history = data.history || [];
-    if (history.length === 0) {
-      histList.innerHTML = '<div id="empty-msg">sin registros aún</div>';
-    } else {
-      histList.innerHTML = history.slice(0,5).map(h =>
-        `<div class="history-row">
-           <span class="h-name ${h.who}">${NAMES[h.who]} pagó</span>
-           <span class="h-date">${fmt(h.at)}</span>
-         </div>`
-      ).join('');
-    }
+    histList.innerHTML = history.length === 0
+      ? '<div id="empty-msg">sin registros aún</div>'
+      : history.slice(0,5).map(h =>
+          `<div class="history-row">
+             <span class="h-name ${h.who}">${NAMES[h.who]} pagó</span>
+             <span class="h-date">${fmt(h.at)}</span>
+           </div>`).join('');
   }
 
   function showSync(msg, type) {
     syncEl.textContent = msg;
     syncEl.className = type || 'visible';
-    if (type !== 'error') {
-      clearTimeout(showSync._t);
-      showSync._t = setTimeout(() => {
-        syncEl.textContent = '';
-        syncEl.className = '';
-      }, 2000);
-    }
+    clearTimeout(showSync._t);
+    if (type !== 'error') showSync._t = setTimeout(() => { syncEl.textContent=''; syncEl.className=''; }, 2000);
   }
 
   async function load(silent) {
     try {
-      const r = await fetch(STORAGE_URL, { cache: 'no-store' });
-      if (r.ok) {
-        const text = await r.text();
-        const data = text ? JSON.parse(text) : { current: 'ivan', history: [] };
-        lastData = data;
-        renderState(data);
-        if (!silent) showSync('sincronizado');
-      } else {
-        throw new Error('fetch failed');
-      }
+      const r = await fetch(BASE + '/latest', { headers: { 'X-Master-Key': API_KEY }, cache: 'no-store' });
+      if (!r.ok) throw new Error(r.status);
+      const json = await r.json();
+      lastData = json.record;
+      renderState(lastData);
+      if (!silent) showSync('sincronizado');
     } catch(e) {
       if (!lastData) lastData = { current: 'ivan', history: [] };
       renderState(lastData);
@@ -259,22 +162,16 @@
     if (!lastData) return;
     const who  = lastData.current || 'ivan';
     const next = who === 'ivan' ? 'arturo' : 'ivan';
-    const newEntry = { who, at: new Date().toISOString() };
-    const newData  = {
+    const newData = {
       current: next,
-      history: [newEntry, ...(lastData.history || [])].slice(0, 20)
+      history: [{ who, at: new Date().toISOString() }, ...(lastData.history||[])].slice(0,20)
     };
-
     lastData = newData;
     renderState(newData);
     showSync('guardando…');
-
     try {
-      await fetch(STORAGE_URL, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newData)
-      });
+      const r = await fetch(BASE, { method: 'PUT', headers: HEADERS, body: JSON.stringify(newData) });
+      if (!r.ok) throw new Error(r.status);
       showSync('guardado ✓');
     } catch(e) {
       showSync('error al guardar', 'error');
@@ -282,7 +179,7 @@
   }
 
   load(false);
-  pollTimer = setInterval(() => load(true), POLL_MS);
+  setInterval(() => load(true), POLL_MS);
 </script>
 </body>
 </html>

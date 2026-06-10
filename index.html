@@ -40,13 +40,18 @@
       border-radius: 50%; border: none; cursor: pointer;
       font-size: 30px; font-weight: 600;
       font-family: inherit; color: #fff;
-      transition: transform 0.12s ease, box-shadow 0.2s ease;
+      transition: transform 0.12s ease, box-shadow 0.2s ease, opacity 0.2s ease;
       user-select: none;
     }
-    #pay-btn:active { transform: scale(0.92); }
+    #pay-btn:active:not(:disabled) { transform: scale(0.92); }
     #pay-btn.ivan   { background: #c0392b; box-shadow: 0 0 70px rgba(192,57,43,0.4); }
     #pay-btn.arturo { background: #1a5fa8; box-shadow: 0 0 70px rgba(26,95,168,0.4); }
-    #btn-hint { font-size: 12px; color: #333; letter-spacing: 0.04em; }
+    #pay-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    #btn-hint { font-size: 12px; color: #333; letter-spacing: 0.04em; text-align: center; }
     #bottom { width: 100%; }
     #history-box {
       background: #111; border: 0.5px solid #222;
@@ -108,8 +113,22 @@
   const nextName = document.getElementById('next-name');
   const histList = document.getElementById('history-list');
   const syncEl   = document.getElementById('sync-indicator');
+  const btnHint  = document.getElementById('btn-hint');
 
   let lastData = null;
+
+  function todayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  }
+
+  function alreadyPaidToday(history) {
+    if (!history || history.length === 0) return false;
+    const last = history[0];
+    const lastDate = new Date(last.at);
+    const lastStr = `${lastDate.getFullYear()}-${lastDate.getMonth()+1}-${lastDate.getDate()}`;
+    return lastStr === todayStr();
+  }
 
   function fmt(iso) {
     const d = new Date(iso), now = new Date(), diff = now - d;
@@ -126,7 +145,17 @@
     btn.className = current;
     btnName.textContent = NAMES[current];
     nextName.textContent = NAMES[current === 'ivan' ? 'arturo' : 'ivan'];
+
     const history = data.history || [];
+    const paid = alreadyPaidToday(history);
+    btn.disabled = paid;
+    if (paid) {
+      const who = history[0].who;
+      btnHint.textContent = `${NAMES[who]} pagó hoy — mañana le toca al otro`;
+    } else {
+      btnHint.textContent = 'toca si pagaste hoy';
+    }
+
     histList.innerHTML = history.length === 0
       ? '<div id="empty-msg">sin registros aún</div>'
       : history.slice(0,5).map(h =>
@@ -159,7 +188,7 @@
   }
 
   async function handlePay() {
-    if (!lastData) return;
+    if (!lastData || btn.disabled) return;
     const who  = lastData.current || 'ivan';
     const next = who === 'ivan' ? 'arturo' : 'ivan';
     const newData = {
